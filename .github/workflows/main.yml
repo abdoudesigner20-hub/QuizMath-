@@ -26,11 +26,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create www folder and copy files
+      - name: Create www folder
         run: |
           mkdir -p www
           cp index.html www/index.html
-          cp icon.png www/icon.png
 
       - name: Add Android platform
         run: npx cap add android
@@ -38,31 +37,13 @@ jobs:
       - name: Sync web files
         run: npx cap sync android
 
-      - name: Install imagemagick for icon resizing
-        run: sudo apt-get install -y imagemagick
-
-      - name: Generate all Android icon sizes
+      - name: Create assets folder and copy icon
         run: |
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          mkdir -p assets
+          cp icon.png assets/icon.png
 
-          convert icon.png -resize 48x48   android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          convert icon.png -resize 48x48   android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-
-          convert icon.png -resize 72x72   android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          convert icon.png -resize 72x72   android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-
-          convert icon.png -resize 96x96   android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          convert icon.png -resize 96x96   android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-
-          convert icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          convert icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-
-          convert icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          convert icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+      - name: Generate icons with @capacitor/assets
+        run: npx @capacitor/assets generate --android
 
       - name: Build APK
         run: |
