@@ -1,6 +1,5 @@
 {
   "appId": "dz.quizmath.app",
   "appName": "QuizMath",
-  "webDir": "www",
-  "bundledWebRuntime": false
+  "webDir": "www"
 }
