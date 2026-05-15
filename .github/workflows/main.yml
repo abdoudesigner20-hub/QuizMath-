@@ -26,7 +26,28 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create www folder
+      - name: Download Cairo font and embed it offline
+        run: |
+          mkdir -p www/fonts
+          curl -L "https://fonts.gstatic.com/s/cairo/v28/SLXGc1nY6HkvalIhTp2mxdt0UX8.woff2" -o www/fonts/cairo-regular.woff2
+          curl -L "https://fonts.gstatic.com/s/cairo/v28/SLXVc1nY6Hkvalr-ao6L59lrFYgIABxl.woff2" -o www/fonts/cairo-bold.woff2
+          # Create font CSS
+          cat > www/fonts/cairo.css << 'EOF'
+          @font-face {
+            font-family: 'Cairo';
+            font-style: normal;
+            font-weight: 400;
+            src: url('./cairo-regular.woff2') format('woff2');
+          }
+          @font-face {
+            font-family: 'Cairo';
+            font-style: normal;
+            font-weight: 700 900;
+            src: url('./cairo-bold.woff2') format('woff2');
+          }
+          EOF
+
+      - name: Create www folder and copy files
         run: |
           mkdir -p www
           cp index.html www/index.html
@@ -45,11 +66,16 @@ jobs:
       - name: Generate icons with @capacitor/assets
         run: npx @capacitor/assets generate --android
 
+      - name: Set Android permissions and WebView settings
+        run: |
+          # Allow cleartext traffic for font loading fallback
+          sed -i 's/android:usesCleartextTraffic="false"/android:usesCleartextTraffic="true"/' android/app/src/main/AndroidManifest.xml || true
+
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
