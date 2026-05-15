@@ -1,5 +1,18 @@
 {
   "appId": "dz.quizmath.app",
   "appName": "QuizMath",
-  "webDir": "www"
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#f0f4f8",
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
 }
