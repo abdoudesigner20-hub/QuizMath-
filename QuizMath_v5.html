@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>QuizMath - اختبار رياضيات الثانوي الجزائري</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  /* === ANDROID WEBVIEW FIX === */
+  html {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    height: 100%;
+    width: 100%;
+  }
+
+  :root {
+    --bg: #f0f4f8;
+    --white: #ffffff;
+    --primary: #1e3a5f;
+    --primary-light: #2d5f9e;
+    --accent: #00aaff;
+    --success: #10b981;
+    --danger: #ef4444;
+    --gold: #f59e0b;
+    --text: #1e3a5f;
+    --text2: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 24px rgba(30,58,95,0.10);
+    --shadow-lg: 0 8px 40px rgba(30,58,95,0.15);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; scrollbar-width:none; -ms-overflow-style:none; }
+  *::-webkit-scrollbar { display:none; }
+
+  body {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+    z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 16px;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .screen.hidden { opacity:0; pointer-events:none; transform: scale(0.97); }
+
+  /* === HOME SCREEN === */
+  #home-screen {
+    background: linear-gradient(160deg, #eef2f7 0%, #dce8f5 100%);
+  }
+
+  /* اسم التطبيق في المنتصف كبير */
+  .home-brand-center {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .home-brand-center .brand-big {
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .home-brand-center .brand-big .bq { color: var(--primary); }
+  .home-brand-center .brand-big .bm { color: var(--accent); }
+  .home-brand-center .brand-tagline {
+    font-size: clamp(0.75rem, 3vw, 0.85rem);
+    color: var(--text2);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .home-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: clamp(20px, 5vw, 36px) clamp(16px, 5vw, 32px);
+    width: 100%; max-width: 420px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .app-icon {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #1e3a5f, #2d5f9e);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.6rem;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 24px rgba(30,58,95,0.25);
+  }
+
+  .home-title {
+    font-size: clamp(1.1rem, 4vw, 1.5rem); font-weight: 900; color: var(--primary); margin-bottom: 8px;
+  }
+
+  .home-desc {
+    font-size: clamp(0.78rem, 2.5vw, 0.88rem); color: var(--text2); line-height: 1.8; margin-bottom: 20px;
+  }
+
+  .btn-start-home {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #1e3a5f, #2d5f9e);
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    font-family: 'Cairo', sans-serif; font-size: 1.1rem; font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(30,58,95,0.3);
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-start-home:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(30,58,95,0.4); }
+
+  /* === MODAL OVERLAY === */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+    z-index: 100;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+  .modal-box {
+    background: var(--white); border-radius: var(--radius);
+    padding: clamp(20px, 5vw, 32px) clamp(16px, 4vw, 28px);
+    width: 100%; max-width: 420px;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.93) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    overflow-y: auto; max-height: 88vh;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
+
+  .modal-title {
+    font-size: 1.25rem; font-weight: 900; color: var(--primary);
+    text-align: center; margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 0.82rem; color: var(--text2); text-align: center; margin-bottom: 20px;
+  }
+
+  .select-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .select-card {
+    background: var(--bg); border: 2px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 18px;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 14px;
+    font-weight: 700; font-size: 0.95rem; color: var(--text);
+  }
+  .select-card:hover { border-color: var(--primary-light); background: #eaf1fb; transform: translateX(-3px); }
+  .select-card .card-label { font-size: 0.95rem; font-weight: 700; }
+  .select-card .card-sub { font-size: 0.72rem; color: var(--text2); font-weight: 600; margin-top: 2px; }
+
+  /* بطاقات المستوى بدون إيموجي */
+  .grade-number {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, #1e3a5f, #2d5f9e);
+    color: #fff; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 900; flex-shrink: 0;
+  }
+
+  /* أيقونات الشعب */
+  .branch-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .branch-icon svg { width: 26px; height: 26px; }
+  .branch-icon.math   { background: linear-gradient(135deg, #1e3a5f, #2d5f9e); }
+  .branch-icon.science{ background: linear-gradient(135deg, #059669, #10b981); }
+  .branch-icon.literature{ background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+  .branch-icon.economy{ background: linear-gradient(135deg, #d97706, #f59e0b); }
+
+  /* === خيارات الصعوبة === */
+  .difficulty-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .diff-card {
+    border: 2px solid var(--border); border-radius: var(--radius-sm);
+    padding: 14px 8px; cursor: pointer; transition: all 0.2s;
+    text-align: center; font-family: 'Cairo', sans-serif;
+    background: var(--bg); position: relative;
+  }
+  .diff-card .diff-label { font-size: 0.9rem; font-weight: 800; }
+  .diff-card .diff-sub { font-size: 0.68rem; color: var(--text2); margin-top: 3px; }
+  .diff-card .diff-check {
+    display: none; position: absolute; top: -8px; right: -8px;
+    width: 20px; height: 20px; border-radius: 50%;
+    align-items: center; justify-content: center;
+    font-size: 0.7rem; color: #fff; font-weight: 900;
+  }
+  .diff-card.selected .diff-check { display: flex; }
+  .diff-card.easy  { border-color: #10b981; }
+  .diff-card.mid   { border-color: #f59e0b; }
+  .diff-card.hard  { border-color: #ef4444; }
+  .diff-card.easy.selected  { background: rgba(16,185,129,0.12); border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.25); transform: scale(1.04); }
+  .diff-card.mid.selected   { background: rgba(245,158,11,0.12); border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.25); transform: scale(1.04); }
+  .diff-card.hard.selected  { background: rgba(239,68,68,0.12); border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.25); transform: scale(1.04); }
+  .diff-card .diff-label.easy  { color: #10b981; }
+  .diff-card .diff-label.mid   { color: #f59e0b; }
+  .diff-card .diff-label.hard  { color: #ef4444; }
+  .diff-card.easy.selected .diff-check { background: #10b981; }
+  .diff-card.mid.selected  .diff-check { background: #f59e0b; }
+  .diff-card.hard.selected .diff-check { background: #ef4444; }
+
+  /* === خيارات عدد الأسئلة === */
+  .qcount-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .qcount-card {
+    border: 2px solid var(--border); border-radius: 10px;
+    padding: 12px 6px; cursor: pointer; transition: all 0.2s;
+    text-align: center; font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+  }
+  .qcount-card .qc-num { font-size: 1.2rem; font-weight: 900; color: var(--primary); }
+  .qcount-card .qc-lbl { font-size: 0.65rem; color: var(--text2); }
+  .qcount-card.selected { background: rgba(30,58,95,0.08); border-color: var(--primary); }
+  .qcount-card.selected .qc-num { color: var(--primary-light); }
+
+  .section-label {
+    font-size: 0.75rem; font-weight: 800; color: var(--text2);
+    margin-bottom: 8px; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* === QUIZ SCREEN === */
+  #quiz-screen {
+    background: var(--bg);
+    padding: 0; align-items: stretch; justify-content: flex-start;
+    display: flex; flex-direction: column;
+    height: 100%; overflow: hidden;
+  }
+
+  .quiz-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+
+  .quiz-badge {
+    background: linear-gradient(135deg, #1e3a5f, #2d5f9e);
+    color: #fff; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.76rem; font-weight: 700;
+  }
+  .quiz-qnum { font-size: 0.8rem; color: var(--text2); font-weight: 600; margin-top: 3px; }
+
+  .timer-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .timer-circle {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: conic-gradient(var(--primary) calc(var(--progress,100)*1%), #e2e8f0 0);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; transition: background 0.2s;
+  }
+  .timer-circle::before {
+    content:''; position:absolute;
+    top: 5px; left: 5px; right: 5px; bottom: 5px;
+    background: var(--white); border-radius:50%;
+  }
+  .timer-val { position:relative; z-index:1; font-size:0.9rem; font-weight:900; color:var(--primary); }
+  .timer-label { font-size:0.58rem; color:var(--text2); font-weight:700; letter-spacing:1px; }
+
+  .exit-btn {
+    background: none; border: none; cursor: pointer; padding: 8px;
+    color: var(--text2); font-size: 1.1rem; border-radius: 8px; transition: all 0.2s;
+  }
+  .exit-btn:hover { color: var(--danger); background: rgba(239,68,68,0.08); }
+
+  .quiz-body {
+    padding: 12px 14px;
+    max-width: 680px; margin: 0 auto; width: 100%;
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .score-bar {
+    display: flex; gap: 8px; margin-bottom: 16px;
+    background: var(--white); border-radius: var(--radius-sm);
+    padding: 10px 14px; align-items: center;
+    box-shadow: var(--shadow);
+    transition: max-height 0.4s ease, opacity 0.4s ease, margin 0.4s ease, padding 0.4s ease;
+    max-height: 80px; overflow: hidden;
+  }
+  .score-bar.hidden-bar {
+    max-height: 0; opacity: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0;
+  }
+  .score-item { flex:1; text-align:center; }
+  .score-item .val { font-size:1.3rem; font-weight:900; }
+  .score-item .lbl { font-size:0.66rem; color:var(--text2); font-weight:700; }
+  .score-item:nth-child(1) .val { color:var(--success); }
+  .score-item:nth-child(2) .val { color:var(--danger); }
+  .score-item:nth-child(3) .val { color:var(--gold); }
+  .score-divider { width:1px; background:var(--border); align-self:stretch; }
+
+  .progress-bar {
+    height: 5px; background: var(--border); border-radius: 10px;
+    overflow: hidden; margin-bottom: 18px;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #1e3a5f, var(--accent));
+    border-radius: 10px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .question-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+  .q-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+  .q-badge {
+    background: linear-gradient(135deg,#1e3a5f,#2d5f9e);
+    color:#fff; width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.78rem; font-weight:900; flex-shrink:0; margin-top:2px;
+  }
+  .q-text { font-size:1rem; font-weight:700; line-height:1.7; color:var(--text); }
+
+  .choices-grid { display:grid; gap:9px; }
+  .choice-btn {
+    width:100%; padding:13px 15px;
+    background: var(--bg); border: 2px solid var(--border);
+    border-radius: var(--radius-sm); text-align:right;
+    cursor:pointer; transition: all 0.2s;
+    font-family:'Cairo',sans-serif; font-size:0.92rem; color:var(--text);
+    display:flex; align-items:center; gap:12px;
+  }
+  .choice-btn:hover:not(:disabled) { border-color:var(--primary-light); background:#eaf1fb; transform:translateX(-3px); }
+  .choice-label {
+    width:26px; height:26px; border-radius:6px;
+    background: var(--white); border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.7rem; font-weight:900; color:var(--text2); flex-shrink:0;
+    transition:all 0.2s;
+  }
+  .choice-btn:hover:not(:disabled) .choice-label { background:var(--primary); border-color:var(--primary); color:#fff; }
+  .choice-btn.correct { border-color:var(--success)!important; background:rgba(16,185,129,0.08)!important; }
+  .choice-btn.correct .choice-label { background:var(--success)!important; border-color:var(--success)!important; color:#fff!important; }
+  .choice-btn.wrong { border-color:var(--danger)!important; background:rgba(239,68,68,0.08)!important; }
+  .choice-btn.wrong .choice-label { background:var(--danger)!important; border-color:var(--danger)!important; color:#fff!important; }
+  .choice-btn:disabled { cursor:default; }
+
+  /* الشرح */
+  .explanation-box {
+    background: rgba(30,58,95,0.05); border:1.5px solid rgba(30,58,95,0.18);
+    border-radius:var(--radius-sm); padding:14px 16px; margin-top:14px;
+    font-size:0.88rem; color:var(--text); line-height:1.8; display:none;
+  }
+  .explanation-box.show { display:block; animation:fadeIn 0.4s; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+  .expl-label {
+    font-size:0.75rem; font-weight:900; color:var(--primary);
+    margin-bottom:6px; letter-spacing:1px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .expl-label::before {
+    content: ''; display: inline-block;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--primary);
+  }
+
+  .hint-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:7px 14px; border-radius:20px;
+    background:rgba(245,158,11,0.08); border:1.5px solid rgba(245,158,11,0.3);
+    color:var(--gold); font-family:'Cairo',sans-serif; font-size:0.8rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s; margin-top:12px;
+  }
+  .hint-btn:hover { background:rgba(245,158,11,0.15); }
+  .hint-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .next-btn {
+    width:100%; padding:14px; border:none; border-radius:var(--radius-sm);
+    background:linear-gradient(135deg,#1e3a5f,#2d5f9e);
+    color:#fff; font-family:'Cairo',sans-serif; font-size:1rem; font-weight:900;
+    cursor:pointer; transition:all 0.2s; display:none;
+    box-shadow:0 6px 18px rgba(30,58,95,0.25);
+    margin-bottom: 20px;
+  }
+  .next-btn.show { display:block; animation:slideIn 0.3s; }
+  .next-btn:hover { transform:translateY(-2px); }
+
+  /* === RESULT SCREEN === */
+  #result-screen {
+    background: var(--bg); overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .result-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: clamp(20px, 5vw, 32px) clamp(16px, 4vw, 26px);
+    width:100%; max-width:420px;
+    text-align:center; box-shadow: var(--shadow-lg);
+    animation: resultPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes resultPop { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+
+  .result-trophy { font-size: clamp(48px, 12vw, 64px); margin-bottom:8px; }
+  .result-name { font-size: clamp(1rem, 4vw, 1.2rem); font-weight:900; color:var(--primary); margin-bottom:4px; }
+  .result-score-big {
+    font-size: clamp(2.8rem, 10vw, 3.8rem); font-weight:900;
+    background:linear-gradient(135deg,#1e3a5f,var(--accent));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    line-height:1;
+  }
+  .result-score-label { color:var(--text2); font-size:0.83rem; margin-bottom:14px; }
+  .result-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px; }
+  .result-stat { background:var(--bg); border-radius:var(--radius-sm); padding:10px 6px; }
+  .result-stat .sv { font-size: clamp(1.1rem, 5vw, 1.4rem); font-weight:900; }
+  .result-stat .sl { font-size:0.66rem; color:var(--text2); font-weight:700; }
+  .result-msg {
+    background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:12px; font-size:0.86rem; color:var(--text2); margin-bottom:16px; line-height:1.7;
+  }
+  .result-btns { display:flex; gap:10px; }
+  .result-btns button { flex:1; }
+
+  /* === LEADERBOARD === */
+  #leaderboard-screen {
+    background:var(--bg); overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .leaderboard-wrap { width:100%; max-width:500px; }
+  .lb-header { text-align:center; margin-bottom:22px; }
+  .lb-title { font-size:1.7rem; font-weight:900; color:var(--primary); }
+  .lb-sub { color:var(--text2); font-size:0.84rem; }
+  .lb-list { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:20px; }
+  .lb-item {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:13px 16px;
+    display:flex; align-items:center; gap:12px;
+    box-shadow: var(--shadow); animation: slideIn 0.3s ease both;
+  }
+  .lb-rank {
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:0.85rem;
+  }
+  .lb-rank.gold   { background:rgba(245,158,11,0.15); color:var(--gold); border:2px solid var(--gold); }
+  .lb-rank.silver { background:rgba(148,163,184,0.15); color:#64748b; border:2px solid #94a3b8; }
+  .lb-rank.bronze { background:rgba(180,83,9,0.15); color:#b45309; border:2px solid #ca8a04; }
+  .lb-rank.other  { background:var(--bg); color:var(--text2); border:2px solid var(--border); }
+  .lb-info { flex:1; }
+  .lb-name { font-weight:700; font-size:0.92rem; }
+  .lb-meta { font-size:0.7rem; color:var(--text2); margin-top:2px; }
+  .lb-score { text-align:left; }
+  .lb-score .pts { font-size:1.25rem; font-weight:900; color:var(--success); }
+  .lb-score .pts-lbl { font-size:0.66rem; color:var(--text2); }
+  .lb-delete { background:none; border:none; cursor:pointer; padding:6px; color:var(--text2); border-radius:6px; transition:all 0.2s; }
+  .lb-delete:hover { color:var(--danger); background:rgba(239,68,68,0.08); }
+  .lb-empty { text-align:center; padding:44px 20px; color:var(--text2); }
+  .lb-empty-icon { font-size:2.8rem; margin-bottom:10px; }
+  .lb-controls { display:flex; gap:8px; justify-content:center; margin-bottom:16px; flex-wrap:wrap; }
+  .lb-filter {
+    padding:6px 13px; border-radius:20px; border:1.5px solid var(--border);
+    background:var(--white); color:var(--text2); font-family:'Cairo',sans-serif;
+    font-size:0.76rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+  }
+  .lb-filter.active { border-color:var(--primary); color:var(--primary); background:rgba(30,58,95,0.07); }
+  .lb-nav { display:flex; gap:12px; justify-content:center; }
+
+  /* === SHARED BUTTONS === */
+  .btn-primary {
+    padding: 13px 22px; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg,#1e3a5f,#2d5f9e);
+    color:#fff; border:none; font-family:'Cairo',sans-serif;
+    font-size:0.9rem; font-weight:800; cursor:pointer; transition:all 0.2s;
+    box-shadow: 0 4px 14px rgba(30,58,95,0.25);
+  }
+  .btn-primary:hover { transform:translateY(-1px); }
+
+  .btn-secondary {
+    padding:12px 20px; border-radius:var(--radius-sm);
+    background:var(--white); border:1.5px solid var(--border);
+    color:var(--text2); font-family:'Cairo',sans-serif;
+    font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+  }
+  .btn-secondary:hover { border-color:var(--primary); color:var(--primary); }
+
+  .btn-danger {
+    padding:12px 20px; border-radius:var(--radius-sm);
+    background:rgba(239,68,68,0.08); border:1.5px solid rgba(239,68,68,0.25);
+    color:var(--danger); font-family:'Cairo',sans-serif;
+    font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+  }
+  .btn-danger:hover { background:rgba(239,68,68,0.15); }
+
+  /* Toast */
+  #feedback-toast {
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+    padding:10px 22px; border-radius:30px; font-size:0.86rem; font-weight:800;
+    opacity:0; transition:all 0.3s; pointer-events:none; z-index:50;
+  }
+  #feedback-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #feedback-toast.correct { background:rgba(16,185,129,0.92); color:#fff; }
+  #feedback-toast.wrong   { background:rgba(239,68,68,0.92); color:#fff; }
+
+  #notif-toast {
+    position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-20px);
+    padding:10px 22px; border-radius:20px; font-size:0.84rem; font-weight:700;
+    opacity:0; pointer-events:none; z-index:200; transition:all 0.3s;
+    background:rgba(30,58,95,0.92); border:1px solid rgba(255,255,255,0.1);
+    color:#fff; white-space:nowrap;
+  }
+  #notif-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .streak-badge {
+    position:fixed; top:76px; right:20px; z-index:50;
+    background:linear-gradient(135deg,#f59e0b,#ef4444);
+    color:#fff; padding:7px 14px; border-radius:20px;
+    font-weight:800; font-size:0.82rem;
+    transform:translateX(120px); transition:transform 0.4s;
+    box-shadow:0 6px 18px rgba(245,158,11,0.35);
+  }
+  .streak-badge.show { transform:translateX(0); }
+
+  .float-point {
+    position:fixed; z-index:150; pointer-events:none;
+    font-weight:900; font-size:1.2rem;
+    animation:floatUp 1.2s ease forwards;
+  }
+  @keyframes floatUp {
+    0%   { opacity:1; transform:translateY(0) scale(1); }
+    100% { opacity:0; transform:translateY(-70px) scale(1.3); }
+  }
+
+  .confetti-piece {
+    position:fixed; z-index:200; pointer-events:none;
+    animation: confettiFall 3s ease forwards;
+  }
+  @keyframes confettiFall {
+    0%   { opacity:1; transform:translateY(-20vh) rotateZ(0); }
+    100% { opacity:0; transform:translateY(110vh) rotateZ(720deg); }
+  }
+
+  @media(max-width:480px) {
+    .quiz-body { padding:10px 10px; }
+    .difficulty-grid { grid-template-columns: 1fr; }
+    .qcount-grid { grid-template-columns: 1fr 1fr; }
+    .question-card { padding: 16px; }
+    .choice-btn { padding: 11px 12px; font-size: 0.85rem; }
+    .modal-box { padding: 20px 16px; }
+    .modal-title { font-size: 1.1rem; }
+  }
+
+  /* Capacitor / Android WebView specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    html, body {
+      height: -webkit-fill-available;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="feedback-toast"></div>
+<div id="notif-toast"></div>
+<div id="streak-badge" class="streak-badge"><span id="streak-text">3 متتالية!</span></div>
+
+<!-- === HOME SCREEN === -->
+<div id="home-screen" class="screen">
+  <!-- اسم التطبيق في المنتصف كبير -->
+  <div class="home-brand-center">
+    <div class="brand-big"><span class="bq">Quiz</span><span class="bm">Math</span></div>
+    <div class="brand-tagline">اختبار رياضيات الثانوي الجزائري</div>
+  </div>
+
+  <div class="home-card">
+    <div class="app-icon">🧮</div>
+    <div class="home-title">مرحباً بك في QuizMath</div>
+    <div class="home-desc">
+      اختبر معلوماتك في مادة الرياضيات<br>
+      وفق المنهاج الجزائري للتعليم الثانوي<br>
+      لجميع الشعب الدراسية
+    </div>
+    <button class="btn-start-home" onclick="openGradeModal()">
+      ابدأ الاختبار ◄
+    </button>
+    <div style="height:10px;"></div>
+    <button class="btn-secondary" style="width:100%;text-align:center;" onclick="showLeaderboard()">سجل النتائج</button>
+  </div>
+</div>
+
+<!-- === GRADE MODAL === -->
+<div id="grade-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">اختر المستوى الدراسي</div>
+    <div class="modal-sub">اختر سنتك الدراسية في التعليم الثانوي</div>
+    <div class="select-grid">
+      <div class="select-card" onclick="selectGrade('1')">
+        <div class="grade-number">1</div>
+        <div>
+          <div class="card-label">أولى ثانوي</div>
+          <div class="card-sub">السنة الأولى ثانوي</div>
+        </div>
+      </div>
+      <div class="select-card" onclick="selectGrade('2')">
+        <div class="grade-number">2</div>
+        <div>
+          <div class="card-label">ثانية ثانوية</div>
+          <div class="card-sub">السنة الثانية ثانوي</div>
+        </div>
+      </div>
+      <div class="select-card" onclick="selectGrade('3')">
+        <div class="grade-number">3</div>
+        <div>
+          <div class="card-label">ثالثة ثانوي - باكالوريا</div>
+          <div class="card-sub">السنة الثالثة - شهادة البكالوريا</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:10px;"></div>
+    <button class="btn-secondary" style="width:100%;text-align:center;" onclick="closeGradeModal()">← رجوع</button>
+  </div>
+</div>
+
+<!-- === BRANCH MODAL === -->
+<div id="branch-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">اختر الشعبة</div>
+    <div class="modal-sub" id="branch-modal-sub">السنة الأولى - اختر شعبتك</div>
+    <div class="select-grid" id="branch-grid-modal"></div>
+    <div style="height:10px;"></div>
+    <button class="btn-secondary" style="width:100%;text-align:center;" onclick="closeBranchModal()">← رجوع</button>
+  </div>
+</div>
+
+<!-- === DIFFICULTY + COUNT MODAL === -->
+<div id="diff-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">إعدادات الاختبار</div>
+    <div class="modal-sub" id="diff-modal-sub">اختر مستوى الصعوبة وعدد الأسئلة</div>
+
+    <div class="section-label">مستوى الصعوبة</div>
+    <div class="difficulty-grid">
+      <div class="diff-card easy selected" id="diff-easy" onclick="selectDiff('easy',this)">
+        <div class="diff-check">✓</div>
+        <div class="diff-label easy">سهل</div>
+        <div class="diff-sub">أسئلة أساسية</div>
+      </div>
+      <div class="diff-card mid" id="diff-mid" onclick="selectDiff('mid',this)">
+        <div class="diff-check">✓</div>
+        <div class="diff-label mid">متوسط</div>
+        <div class="diff-sub">أسئلة متنوعة</div>
+      </div>
+      <div class="diff-card hard" id="diff-hard" onclick="selectDiff('hard',this)">
+        <div class="diff-check">✓</div>
+        <div class="diff-label hard">صعب</div>
+        <div class="diff-sub">أسئلة متقدمة</div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="section-label">عدد الأسئلة</div>
+    <div class="qcount-grid">
+      <div class="qcount-card" onclick="selectQCount(5,this)">
+        <div class="qc-num">5</div>
+        <div class="qc-lbl">أسئلة</div>
+      </div>
+      <div class="qcount-card selected" id="qc-10" onclick="selectQCount(10,this)">
+        <div class="qc-num">10</div>
+        <div class="qc-lbl">أسئلة</div>
+      </div>
+      <div class="qcount-card" onclick="selectQCount(15,this)">
+        <div class="qc-num">15</div>
+        <div class="qc-lbl">أسئلة</div>
+      </div>
+      <div class="qcount-card" onclick="selectQCount(20,this)">
+        <div class="qc-num">20</div>
+        <div class="qc-lbl">أسئلة</div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <button class="btn-primary" style="width:100%;padding:15px;font-size:1rem;" onclick="openNameModal()">
+      التالي ◄
+    </button>
+    <div style="height:8px;"></div>
+    <button class="btn-secondary" style="width:100%;text-align:center;" onclick="closeDiffModal()">← رجوع</button>
+  </div>
+</div>
+
+<!-- === NAME MODAL === -->
+<div id="name-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">أدخل اسمك</div>
+    <div class="modal-sub" id="name-modal-sub">للمتابعة وتسجيل نتيجتك</div>
+    <input type="text" id="player-name" placeholder="اسمك هنا..." maxlength="30"
+      style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid #e2e8f0;
+             font-family:'Cairo',sans-serif;font-size:1rem;color:#1e3a5f;background:#f0f4f8;
+             outline:none;margin-bottom:16px;text-align:right;"
+      onfocus="this.style.borderColor='#2d5f9e'" onblur="this.style.borderColor='#e2e8f0'"
+      onkeydown="if(event.key==='Enter')confirmStart()">
+    <button class="btn-primary" style="width:100%;padding:15px;font-size:1rem;" onclick="confirmStart()">
+      ابدأ الاختبار
+    </button>
+    <div style="height:8px;"></div>
+    <button class="btn-secondary" style="width:100%;text-align:center;" onclick="closeNameModal()">← رجوع</button>
+  </div>
+</div>
+
+<!-- === EXIT MODAL === -->
+<div id="exit-modal" class="modal-overlay">
+  <div class="modal-box" style="text-align:center;">
+    <div style="font-size:2.2rem;margin-bottom:12px;">⚠️</div>
+    <div class="modal-title">الخروج من الاختبار؟</div>
+    <div class="modal-sub" style="margin-bottom:20px;">سيتم إنهاء الاختبار وتسجيل نتيجتك الحالية.</div>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button class="btn-danger" onclick="confirmExit()">نعم، اخرج</button>
+      <button class="btn-secondary" onclick="closeExitModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- === QUIZ SCREEN === -->
+<div id="quiz-screen" class="screen hidden">
+  <div class="quiz-header">
+    <div>
+      <div class="quiz-badge" id="quiz-badge">رياضيات</div>
+      <div class="quiz-qnum" id="quiz-qnum">سؤال 1 / 10</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-circle" id="timer-circle">
+        <span class="timer-val" id="timer-val">30</span>
+      </div>
+      <span class="timer-label">ثانية</span>
+    </div>
+    <button class="exit-btn" onclick="showExitModal()">✕</button>
+  </div>
+
+  <div class="quiz-body">
+    <div class="score-bar" id="score-bar">
+      <div class="score-item">
+        <div class="val" id="score-correct">0</div>
+        <div class="lbl">صحيح</div>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-item">
+        <div class="val" id="score-wrong">0</div>
+        <div class="lbl">خطأ</div>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-item">
+        <div class="val" id="score-pts">0</div>
+        <div class="lbl">نقطة</div>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-header">
+        <div class="q-badge" id="q-num-badge">1</div>
+        <div class="q-text" id="q-text">جاري التحميل...</div>
+      </div>
+      <div class="choices-grid" id="choices-grid"></div>
+      <div>
+        <button class="hint-btn" id="hint-btn" onclick="useHint()">
+          تلميح <span id="hint-count">3</span>
+        </button>
+      </div>
+      <div class="explanation-box" id="explanation-box">
+        <div class="expl-label">الشرح</div>
+        <span id="expl-text"></span>
+      </div>
+    </div>
+
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">التالي ←</button>
+  </div>
+</div>
+
+<!-- === RESULT SCREEN === -->
+<div id="result-screen" class="screen hidden">
+  <div class="result-card">
+    <div class="result-trophy" id="result-trophy">🏆</div>
+    <div class="result-name" id="result-name">اللاعب</div>
+    <div class="result-score-big" id="result-score-big">0</div>
+    <div class="result-score-label">نقطة</div>
+    <div class="result-stats">
+      <div class="result-stat">
+        <div class="sv" style="color:var(--success)" id="rs-correct">0</div>
+        <div class="sl">صحيح</div>
+      </div>
+      <div class="result-stat">
+        <div class="sv" style="color:var(--danger)" id="rs-wrong">0</div>
+        <div class="sl">خطأ</div>
+      </div>
+      <div class="result-stat">
+        <div class="sv" style="color:var(--gold)" id="rs-pct">0%</div>
+        <div class="sl">دقة</div>
+      </div>
+    </div>
+    <div class="result-msg" id="result-msg">رسالة الأداء</div>
+    <div class="result-btns">
+      <button class="btn-primary" onclick="restartQuiz()">إعادة</button>
+      <button class="btn-secondary" onclick="goHome()">الرئيسية</button>
+    </div>
+    <div style="height:10px;"></div>
+    <button class="btn-secondary" style="width:100%;text-align:center;" onclick="showLeaderboard()">عرض السجل</button>
+  </div>
+</div>
+
+<!-- === LEADERBOARD SCREEN === -->
+<div id="leaderboard-screen" class="screen hidden">
+  <div class="leaderboard-wrap">
+    <div class="lb-header">
+      <div style="font-size:2.2rem;margin-bottom:8px;">🏆</div>
+      <div class="lb-title">سجل النتائج</div>
+      <div class="lb-sub">أفضل النتائج المحققة</div>
+    </div>
+    <div class="lb-controls">
+      <button class="lb-filter active" onclick="filterLb('all',this)">الكل</button>
+      <button class="lb-filter" onclick="filterLb('math',this)">رياضيات</button>
+      <button class="lb-filter" onclick="filterLb('science',this)">علوم تجريبية</button>
+      <button class="lb-filter" onclick="filterLb('literature',this)">آداب</button>
+      <button class="lb-filter" onclick="filterLb('economy',this)">تسيير</button>
+    </div>
+    <ul class="lb-list" id="lb-list"></ul>
+    <div class="lb-nav">
+      <button class="btn-secondary" onclick="goHome()">← الرئيسية</button>
+      <button class="btn-danger" onclick="clearAllRecords()">مسح الكل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===========================
+// AUDIO ENGINE
+// ===========================
+let AC;
+try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { AC = null; }
+function playTone(freq,dur,type='sine',vol=0.25) {
+  if(!AC) return;
+  try {
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+dur);
+    o.start(AC.currentTime); o.stop(AC.currentTime+dur);
+  } catch(e) {}
+}
+function sfx(n){
+  if(!AC) return;
+  if(AC.state==='suspended') AC.resume();
+  switch(n){
+    case 'correct': playTone(523,0.1,'triangle',0.28); setTimeout(()=>playTone(659,0.1,'triangle',0.28),100); setTimeout(()=>playTone(784,0.2,'triangle',0.3),200); break;
+    case 'wrong':   playTone(200,0.15,'sawtooth',0.22); setTimeout(()=>playTone(150,0.2,'sawtooth',0.18),120); break;
+    case 'click':   playTone(800,0.04,'sine',0.1); break;
+    case 'start':   [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,0.15,'triangle',0.22),i*80)); break;
+    case 'finish':  [523,659,784,988,1175].forEach((f,i)=>setTimeout(()=>playTone(f,0.2,'triangle',0.3),i*120)); break;
+    case 'hint':    playTone(440,0.1,'sine',0.18); setTimeout(()=>playTone(550,0.15,'sine',0.18),100); break;
+    case 'tick':    playTone(660,0.04,'sine',0.08); break;
+    case 'tick_warn': playTone(900,0.07,'square',0.2); break;
+  }
+}
+// Resume AudioContext on first interaction (required on Android/iOS)
+function resumeAC() { if(AC && AC.state==='suspended') AC.resume(); }
+document.addEventListener('click', resumeAC, {once:true});
+document.addEventListener('touchstart', resumeAC, {once:true});
+
+// ===========================
+// QUESTION BANK
+// ===========================
+const QUESTIONS = {
+  '1': {
+    math: [
+      {q:"ما نتيجة: 3² + 4²؟",a:[{t:"25",c:true},{t:"7",c:false},{t:"49",c:false},{t:"12",c:false}],expl:"3²=9، 4²=16، المجموع=25",diff:'easy'},
+      {q:"ما قيمة x في: 2x + 4 = 10؟",a:[{t:"x = 3",c:true},{t:"x = 4",c:false},{t:"x = 5",c:false},{t:"x = 2",c:false}],expl:"نطرح 4: 2x=6، نقسم على 2: x=3",diff:'easy'},
+      {q:"ما محيط مربع طول ضلعه 5 سم؟",a:[{t:"20 سم",c:true},{t:"25 سم",c:false},{t:"10 سم",c:false},{t:"15 سم",c:false}],expl:"محيط المربع = 4 × الضلع = 4×5 = 20 سم",diff:'easy'},
+      {q:"ما مساحة مستطيل طوله 8 سم وعرضه 3 سم؟",a:[{t:"24 سم²",c:true},{t:"22 سم²",c:false},{t:"11 سم²",c:false},{t:"24 سم",c:false}],expl:"المساحة = الطول × العرض = 8×3 = 24 سم²",diff:'easy'},
+      {q:"ما نتيجة (-3) × (-4)؟",a:[{t:"12",c:true},{t:"-12",c:false},{t:"7",c:false},{t:"-7",c:false}],expl:"سالب × سالب = موجب، -3 × -4 = 12",diff:'easy'},
+      {q:"كم تساوي 1/2 + 1/3؟",a:[{t:"5/6",c:true},{t:"2/5",c:false},{t:"2/6",c:false},{t:"1/6",c:false}],expl:"1/2 = 3/6، 1/3 = 2/6، المجموع = 5/6",diff:'easy'},
+      {q:"ما مجموع زوايا المثلث؟",a:[{t:"180°",c:true},{t:"360°",c:false},{t:"90°",c:false},{t:"270°",c:false}],expl:"مجموع زوايا أي مثلث = 180 درجة",diff:'easy'},
+      {q:"ما الجذر التربيعي لـ 144؟",a:[{t:"12",c:true},{t:"11",c:false},{t:"14",c:false},{t:"13",c:false}],expl:"12 × 12 = 144، لذا √144 = 12",diff:'easy'},
+      {q:"ما القاسم المشترك الأكبر لـ 12 و 18؟",a:[{t:"6",c:true},{t:"3",c:false},{t:"9",c:false},{t:"2",c:false}],expl:"12 = 2²×3، 18 = 2×3²، القاسم المشترك الأكبر = 2×3 = 6",diff:'mid'},
+      {q:"كم عدد محاور التماثل للمثلث المتساوي الأضلاع؟",a:[{t:"3",c:true},{t:"0",c:false},{t:"1",c:false},{t:"6",c:false}],expl:"المثلث المتساوي الأضلاع له 3 محاور تماثل",diff:'mid'},
+      {q:"ما الحد الرابع في المتتالية: 1, 3, 5, ...؟",a:[{t:"7",c:true},{t:"6",c:false},{t:"8",c:false},{t:"9",c:false}],expl:"متتالية فردية بخطوة 2: 1,3,5,7",diff:'mid'},
+      {q:"ما قيمة 5! (مضروب 5)؟",a:[{t:"120",c:true},{t:"25",c:false},{t:"60",c:false},{t:"100",c:false}],expl:"5! = 5×4×3×2×1 = 120",diff:'mid'},
+      {q:"ما مساحة دائرة نصف قطرها 7 سم؟ (π≈3.14)",a:[{t:"153.86 سم²",c:true},{t:"43.96 سم²",c:false},{t:"49 سم²",c:false},{t:"44 سم²",c:false}],expl:"المساحة = π×r² = 3.14×49 = 153.86 سم²",diff:'mid'},
+      {q:"بسّط: 15/25",a:[{t:"3/5",c:true},{t:"5/3",c:false},{t:"1/2",c:false},{t:"2/3",c:false}],expl:"نقسم البسط والمقام على 5: 15÷5=3، 25÷5=5، النتيجة 3/5",diff:'mid'},
+      {q:"ما ناتج: 2³ × 2²؟",a:[{t:"32",c:true},{t:"16",c:false},{t:"64",c:false},{t:"12",c:false}],expl:"2³×2² = 2^(3+2) = 2⁵ = 32",diff:'hard'},
+      {q:"ما محيط دائرة قطرها 10 سم؟ (π≈3.14)",a:[{t:"31.4 سم",c:true},{t:"62.8 سم",c:false},{t:"78.5 سم",c:false},{t:"15.7 سم",c:false}],expl:"المحيط = π×D = 3.14×10 = 31.4 سم",diff:'hard'},
+      {q:"ما ناتج: (x+2)²؟",a:[{t:"x²+4x+4",c:true},{t:"x²+4",c:false},{t:"x²+2x+4",c:false},{t:"x²+2",c:false}],expl:"(a+b)² = a²+2ab+b²، لذا (x+2)²=x²+4x+4",diff:'hard'},
+      {q:"ما الضرب المشترك لـ 4 و 6؟",a:[{t:"12",c:true},{t:"24",c:false},{t:"6",c:false},{t:"2",c:false}],expl:"مضاعفات 4: 4,8,12... مضاعفات 6: 6,12... أصغر مشترك = 12",diff:'hard'},
+      {q:"ما عدد وجوه المكعب؟",a:[{t:"6",c:true},{t:"8",c:false},{t:"4",c:false},{t:"12",c:false}],expl:"المكعب له 6 وجوه مربعة متساوية",diff:'easy'},
+      {q:"حل: |−7|",a:[{t:"7",c:true},{t:"-7",c:false},{t:"0",c:false},{t:"14",c:false}],expl:"القيمة المطلقة دائماً موجبة: |-7| = 7",diff:'easy'},
+    ],
+    science: [
+      {q:"ما قيمة x في: 3x − 6 = 9؟",a:[{t:"x = 5",c:true},{t:"x = 3",c:false},{t:"x = 1",c:false},{t:"x = 6",c:false}],expl:"3x = 15، x = 5",diff:'easy'},
+      {q:"ما نتيجة: √64؟",a:[{t:"8",c:true},{t:"6",c:false},{t:"9",c:false},{t:"7",c:false}],expl:"8×8=64، لذا √64=8",diff:'easy'},
+      {q:"ما مجموع زوايا المربع؟",a:[{t:"360°",c:true},{t:"180°",c:false},{t:"270°",c:false},{t:"90°",c:false}],expl:"المربع له 4 زوايا قائمة: 4×90=360°",diff:'easy'},
+      {q:"ما حجم مكعب طول ضلعه 3 سم؟",a:[{t:"27 سم³",c:true},{t:"9 سم³",c:false},{t:"12 سم³",c:false},{t:"18 سم³",c:false}],expl:"حجم المكعب = a³ = 3³ = 27 سم³",diff:'easy'},
+      {q:"ما الرقم الأول (الأولي) بين 10 و 20؟",a:[{t:"11",c:true},{t:"12",c:false},{t:"10",c:false},{t:"15",c:false}],expl:"11 عدد أولي لأنه لا يقبل القسمة إلا على 1 و 11",diff:'easy'},
+      {q:"ما نسبة طالب حصل على 14/20؟",a:[{t:"70%",c:true},{t:"75%",c:false},{t:"65%",c:false},{t:"80%",c:false}],expl:"14÷20×100 = 70%",diff:'easy'},
+      {q:"ما ناتج: (2x)(3x)؟",a:[{t:"6x²",c:true},{t:"5x²",c:false},{t:"6x",c:false},{t:"5x",c:false}],expl:"نضرب المعاملات والمتغيرات: 2×3=6، x×x=x²، النتيجة: 6x²",diff:'mid'},
+      {q:"ما مساحة مثلث قاعدته 10 سم وارتفاعه 6 سم؟",a:[{t:"30 سم²",c:true},{t:"60 سم²",c:false},{t:"16 سم²",c:false},{t:"15 سم²",c:false}],expl:"المساحة = ½ × 10 × 6 = 30 سم²",diff:'mid'},
+      {q:"إذا كانت x+y=10 و x−y=4، فما قيمة x؟",a:[{t:"7",c:true},{t:"3",c:false},{t:"6",c:false},{t:"4",c:false}],expl:"نجمع المعادلتين: 2x=14، x=7",diff:'mid'},
+      {q:"ما ناتج 15% من 200؟",a:[{t:"30",c:true},{t:"20",c:false},{t:"15",c:false},{t:"25",c:false}],expl:"15÷100×200 = 30",diff:'mid'},
+      {q:"ما طول الوتر في مثلث قائم أضلاعه 3 و 4؟",a:[{t:"5",c:true},{t:"7",c:false},{t:"6",c:false},{t:"12",c:false}],expl:"قانون فيثاغورس: c²=3²+4²=9+16=25، c=5",diff:'hard'},
+      {q:"ما ناتج: 4x(x−2)؟",a:[{t:"4x²−8x",c:true},{t:"4x²+8x",c:false},{t:"4x−8",c:false},{t:"4x²",c:false}],expl:"نوزع 4x: 4x×x=4x²، 4x×(-2)=-8x",diff:'hard'},
+      {q:"ما الكسر المكافئ لـ 2/3؟",a:[{t:"4/6",c:true},{t:"3/4",c:false},{t:"6/10",c:false},{t:"2/4",c:false}],expl:"نضرب البسط والمقام في 2: 2×2=4، 3×2=6",diff:'mid'},
+      {q:"ما قيمة: 2⁻² ؟",a:[{t:"1/4",c:true},{t:"-4",c:false},{t:"1/2",c:false},{t:"4",c:false}],expl:"2⁻² = 1/2² = 1/4",diff:'hard'},
+      {q:"ما مجموع الأعداد من 1 إلى 10؟",a:[{t:"55",c:true},{t:"50",c:false},{t:"45",c:false},{t:"60",c:false}],expl:"المجموع = n(n+1)/2 = 10×11/2 = 55",diff:'hard'},
+    ],
+    literature: [
+      {q:"ما نتيجة: 2 × (3 + 4)؟",a:[{t:"14",c:true},{t:"10",c:false},{t:"24",c:false},{t:"9",c:false}],expl:"نحسب القوس أولاً: 3+4=7، ثم 2×7=14",diff:'easy'},
+      {q:"ما مساحة مربع طول ضلعه 6 سم؟",a:[{t:"36 سم²",c:true},{t:"24 سم²",c:false},{t:"12 سم²",c:false},{t:"18 سم²",c:false}],expl:"مساحة المربع = a² = 6² = 36 سم²",diff:'easy'},
+      {q:"ما الناتج: 100 − 37؟",a:[{t:"63",c:true},{t:"67",c:false},{t:"73",c:false},{t:"57",c:false}],expl:"100 - 37 = 63",diff:'easy'},
+      {q:"ما 20% من 50؟",a:[{t:"10",c:true},{t:"15",c:false},{t:"5",c:false},{t:"20",c:false}],expl:"20÷100×50 = 10",diff:'easy'},
+      {q:"ما ناتج: 3/4 × 8؟",a:[{t:"6",c:true},{t:"4",c:false},{t:"12",c:false},{t:"3",c:false}],expl:"3×8÷4 = 24÷4 = 6",diff:'easy'},
+      {q:"ما الكسر الأكبر: 2/3 أم 3/4؟",a:[{t:"3/4",c:true},{t:"2/3",c:false},{t:"متساويان",c:false},{t:"لا يمكن المقارنة",c:false}],expl:"2/3≈0.667، 3/4=0.75، إذاً 3/4 أكبر",diff:'mid'},
+      {q:"ما قيمة x في: x/4 = 5؟",a:[{t:"20",c:true},{t:"9",c:false},{t:"1.25",c:false},{t:"4",c:false}],expl:"x = 5 × 4 = 20",diff:'mid'},
+      {q:"ما محيط مثلث أضلاعه 3، 4، 5 سم؟",a:[{t:"12 سم",c:true},{t:"60 سم",c:false},{t:"20 سم",c:false},{t:"6 سم",c:false}],expl:"المحيط = 3+4+5 = 12 سم",diff:'mid'},
+      {q:"ما ناتج: (−5) + 8؟",a:[{t:"3",c:true},{t:"-3",c:false},{t:"13",c:false},{t:"-13",c:false}],expl:"-5+8 = 3",diff:'easy'},
+      {q:"ما الناتج: 2/5 + 1/5؟",a:[{t:"3/5",c:true},{t:"3/10",c:false},{t:"2/10",c:false},{t:"1/2",c:false}],expl:"2/5+1/5 = 3/5",diff:'easy'},
+    ],
+    economy: [
+      {q:"ما ناتج: 1500 + 2750؟",a:[{t:"4250",c:true},{t:"4150",c:false},{t:"4350",c:false},{t:"3250",c:false}],expl:"1500+2750=4250",diff:'easy'},
+      {q:"ما 10% من 8000 دج؟",a:[{t:"800 دج",c:true},{t:"80 دج",c:false},{t:"8000 دج",c:false},{t:"400 دج",c:false}],expl:"10÷100×8000 = 800 دج",diff:'easy'},
+      {q:"ما المتوسط الحسابي لـ: 10, 20, 30؟",a:[{t:"20",c:true},{t:"30",c:false},{t:"15",c:false},{t:"60",c:false}],expl:"المتوسط = (10+20+30)/3 = 60/3 = 20",diff:'easy'},
+      {q:"ما ناتج: 4500 × 12؟",a:[{t:"54000",c:true},{t:"45000",c:false},{t:"48000",c:false},{t:"54500",c:false}],expl:"4500×12 = 54000",diff:'easy'},
+      {q:"ما نسبة الربح إذا اشترى تاجر بضاعة بـ 500 وباعها بـ 600؟",a:[{t:"20%",c:true},{t:"10%",c:false},{t:"16%",c:false},{t:"25%",c:false}],expl:"نسبة الربح = (600-500)/500 × 100 = 100/500×100 = 20%",diff:'mid'},
+      {q:"إذا كان الراتب 30000 دج وتم خصم 15%، ما الصافي؟",a:[{t:"25500 دج",c:true},{t:"27000 دج",c:false},{t:"28500 دج",c:false},{t:"24000 دج",c:false}],expl:"الخصم = 15%×30000 = 4500، الصافي = 30000-4500 = 25500",diff:'mid'},
+      {q:"زاد سعر منتج من 1200 إلى 1440. ما نسبة الزيادة؟",a:[{t:"20%",c:true},{t:"15%",c:false},{t:"240%",c:false},{t:"25%",c:false}],expl:"نسبة الزيادة = 240/1200×100 = 20%",diff:'mid'},
+      {q:"ما ناتج: 3/4 ÷ 1/2؟",a:[{t:"3/2",c:true},{t:"3/8",c:false},{t:"6/4",c:false},{t:"1",c:false}],expl:"3/4 ÷ 1/2 = 3/4 × 2/1 = 6/4 = 3/2",diff:'mid'},
+      {q:"إذا كانت تكلفة إنتاج وحدة 80 دج وسعر بيعها 100 دج، ما هامش الربح؟",a:[{t:"25%",c:true},{t:"20%",c:false},{t:"80%",c:false},{t:"100%",c:false}],expl:"هامش الربح = (100-80)/80 × 100 = 25%",diff:'hard'},
+      {q:"بضاعة قيمتها 6000 دج، خُفّض ثمنها بـ 30%. ما السعر الجديد؟",a:[{t:"4200 دج",c:true},{t:"1800 دج",c:false},{t:"5700 دج",c:false},{t:"3000 دج",c:false}],expl:"الخصم = 30%×6000=1800، السعر الجديد = 6000-1800=4200",diff:'hard'},
+    ]
+  },
+  '2': {
+    math: [
+      {q:"ما قيمة sin(30°)؟",a:[{t:"1/2",c:true},{t:"√3/2",c:false},{t:"√2/2",c:false},{t:"1",c:false}],expl:"sin(30°) = 1/2 من القيم الأساسية للمثلثات",diff:'easy'},
+      {q:"ما قيمة cos(0°)؟",a:[{t:"1",c:true},{t:"0",c:false},{t:"-1",c:false},{t:"∞",c:false}],expl:"cos(0°) = 1 من القيم الأساسية",diff:'easy'},
+      {q:"ما قيمة tan(45°)؟",a:[{t:"1",c:true},{t:"0",c:false},{t:"√3",c:false},{t:"√2",c:false}],expl:"tan(45°) = sin(45°)/cos(45°) = (√2/2)/(√2/2) = 1",diff:'easy'},
+      {q:"ما ناتج: log₁₀(100)؟",a:[{t:"2",c:true},{t:"10",c:false},{t:"1",c:false},{t:"100",c:false}],expl:"10² = 100، لذا log₁₀(100) = 2",diff:'mid'},
+      {q:"حل المعادلة: x² − 4 = 0",a:[{t:"x = ±2",c:true},{t:"x = 2",c:false},{t:"x = ±4",c:false},{t:"x = 4",c:false}],expl:"x² = 4 → x = ±√4 = ±2",diff:'mid'},
+      {q:"ما مشتقة f(x) = 3x²؟",a:[{t:"6x",c:true},{t:"3x",c:false},{t:"6x²",c:false},{t:"x²",c:false}],expl:"f'(x) = 3 × 2x^(2-1) = 6x",diff:'mid'},
+      {q:"ما مشتقة sin(x)؟",a:[{t:"cos(x)",c:true},{t:"-cos(x)",c:false},{t:"sin(x)",c:false},{t:"-sin(x)",c:false}],expl:"(sin(x))' = cos(x)",diff:'mid'},
+      {q:"ما مشتقة cos(x)؟",a:[{t:"-sin(x)",c:true},{t:"sin(x)",c:false},{t:"-cos(x)",c:false},{t:"cos(x)",c:false}],expl:"(cos(x))' = -sin(x)",diff:'mid'},
+      {q:"ما حاصل جمع المتتالية الهندسية: 1+2+4+8+16؟",a:[{t:"31",c:true},{t:"32",c:false},{t:"30",c:false},{t:"63",c:false}],expl:"Sn = a(rⁿ-1)/(r-1) = 1×(2⁵-1)/(2-1) = 31",diff:'hard'},
+      {q:"ما المتجه الرابط بين A(1,2) و B(4,6)؟",a:[{t:"(3,4)",c:true},{t:"(4,3)",c:false},{t:"(-3,-4)",c:false},{t:"(5,8)",c:false}],expl:"AB⃗ = (4-1, 6-2) = (3,4)",diff:'hard'},
+      {q:"ما قيمة: e⁰؟",a:[{t:"1",c:true},{t:"0",c:false},{t:"e",c:false},{t:"∞",c:false}],expl:"أي عدد مرفوع للأس صفر = 1",diff:'easy'},
+      {q:"ما حل: 2sin(x)=1 في [0°, 360°]؟",a:[{t:"30° و 150°",c:true},{t:"60° و 120°",c:false},{t:"45° و 135°",c:false},{t:"30° فقط",c:false}],expl:"sin(x)=1/2، الحلول: x=30° و x=180°-30°=150°",diff:'hard'},
+      {q:"ما نوع الاقتران f(x)=x² (زوجي/فردي)؟",a:[{t:"زوجي",c:true},{t:"فردي",c:false},{t:"ليس زوجياً ولا فردياً",c:false},{t:"زوجي وفردي معاً",c:false}],expl:"f(-x) = (-x)² = x² = f(x)، لذا هو زوجي",diff:'hard'},
+      {q:"ما المسافة بين A(0,0) و B(3,4)؟",a:[{t:"5",c:true},{t:"7",c:false},{t:"12",c:false},{t:"4",c:false}],expl:"AB = √(3²+4²) = √(9+16) = √25 = 5",diff:'mid'},
+      {q:"ما ناتج: ∫₀² 2x dx؟",a:[{t:"4",c:true},{t:"2",c:false},{t:"8",c:false},{t:"1",c:false}],expl:"∫2x dx = x², من 0 إلى 2: 2²-0² = 4",diff:'hard'},
+      {q:"ما الحد العام للمتتالية الحسابية: أوّلها 3 وأساسها 5؟",a:[{t:"uₙ = 3 + (n-1)×5",c:true},{t:"uₙ = 5n + 3",c:false},{t:"uₙ = 3×5^(n-1)",c:false},{t:"uₙ = 5n",c:false}],expl:"الحد العام لمتتالية حسابية: uₙ = u₁ + (n-1)×r = 3+(n-1)×5",diff:'hard'},
+      {q:"ما حاصل: (2+3i)(1-i) في الأعداد المركبة؟",a:[{t:"5+i",c:true},{t:"2-3i",c:false},{t:"5-i",c:false},{t:"-1+5i",c:false}],expl:"= 2-2i+3i-3i² = 2+i+3 = 5+i (لأن i²=-1)",diff:'hard'},
+      {q:"ما قيمة P(A̅) إذا P(A) = 0.3؟",a:[{t:"0.7",c:true},{t:"0.3",c:false},{t:"0.6",c:false},{t:"1.3",c:false}],expl:"P(A̅) = 1 - P(A) = 1 - 0.3 = 0.7",diff:'mid'},
+      {q:"ما حل المعادلة: eˣ = e³؟",a:[{t:"x = 3",c:true},{t:"x = e",c:false},{t:"x = 1",c:false},{t:"x = 0",c:false}],expl:"الدالة الأسية معاملة واحد لواحد: eˣ=e³ → x=3",diff:'hard'},
+      {q:"ما مجموع زوايا مضلع سداسي منتظم؟",a:[{t:"720°",c:true},{t:"360°",c:false},{t:"540°",c:false},{t:"900°",c:false}],expl:"(n-2)×180 = (6-2)×180 = 720°",diff:'mid'},
+    ],
+    science: [
+      {q:"ما مشتقة f(x) = x³ − 2x؟",a:[{t:"3x² − 2",c:true},{t:"3x² + 2",c:false},{t:"x² − 2",c:false},{t:"3x",c:false}],expl:"(x³)' = 3x²، (-2x)' = -2، إذاً f'(x)=3x²-2",diff:'mid'},
+      {q:"ما قيمة: log₂(8)؟",a:[{t:"3",c:true},{t:"4",c:false},{t:"2",c:false},{t:"8",c:false}],expl:"2³ = 8، لذا log₂(8) = 3",diff:'easy'},
+      {q:"ما حل: x² − 5x + 6 = 0؟",a:[{t:"x=2 أو x=3",c:true},{t:"x=1 أو x=6",c:false},{t:"x=-2 أو x=-3",c:false},{t:"x=5 أو x=1",c:false}],expl:"(x-2)(x-3)=0، الحلول x=2 و x=3",diff:'mid'},
+      {q:"ما المميز (Δ) لمعادلة: x²+2x−3=0؟",a:[{t:"16",c:true},{t:"4",c:false},{t:"8",c:false},{t:"0",c:false}],expl:"Δ = b²-4ac = 4-4(1)(-3) = 4+12 = 16",diff:'mid'},
+      {q:"ما قيمة: sin²(x) + cos²(x)؟",a:[{t:"1",c:true},{t:"0",c:false},{t:"2",c:false},{t:"sin(2x)",c:false}],expl:"هذه هوية مثلثية أساسية: sin²x + cos²x = 1",diff:'easy'},
+      {q:"ما نهاية: lim(x→∞) 1/x؟",a:[{t:"0",c:true},{t:"∞",c:false},{t:"1",c:false},{t:"-1",c:false}],expl:"كلما كبر x، صغرت 1/x وتقترب من 0",diff:'mid'},
+      {q:"ما ناتج: ∫ 3x² dx؟",a:[{t:"x³ + C",c:true},{t:"6x + C",c:false},{t:"3x³ + C",c:false},{t:"x³",c:false}],expl:"∫3x² dx = 3×(x³/3) + C = x³ + C",diff:'hard'},
+      {q:"ما قيمة: cos(60°)؟",a:[{t:"1/2",c:true},{t:"√3/2",c:false},{t:"√2/2",c:false},{t:"0",c:false}],expl:"cos(60°) = 1/2 قيمة أساسية",diff:'easy'},
+      {q:"اقترانان f وg، إذا f(x)=2x+1 وg(x)=x², فما (fog)(x)؟",a:[{t:"2x²+1",c:true},{t:"2x+1+x²",c:false},{t:"(2x+1)²",c:false},{t:"2x²+2",c:false}],expl:"(fog)(x) = f(g(x)) = f(x²) = 2x²+1",diff:'hard'},
+      {q:"ما طبيعة تقاطع المنحنى f(x)=x²-4 مع محور الأفاصيل؟",a:[{t:"نقطتان: (2,0) و (-2,0)",c:true},{t:"نقطة واحدة: (0,0)",c:false},{t:"لا يتقاطع",c:false},{t:"ثلاث نقاط",c:false}],expl:"x²-4=0 → x=±2، النقطتان: (2,0) و (-2,0)",diff:'hard'},
+    ],
+    literature: [
+      {q:"ما ناتج: 7 × 8 − 6؟",a:[{t:"50",c:true},{t:"56",c:false},{t:"42",c:false},{t:"14",c:false}],expl:"7×8=56، ثم 56-6=50",diff:'easy'},
+      {q:"ما قيمة x في: 5x = 45؟",a:[{t:"9",c:true},{t:"40",c:false},{t:"50",c:false},{t:"8",c:false}],expl:"x = 45÷5 = 9",diff:'easy'},
+      {q:"ما مساحة شبه المنحرف قاعدتاه 4 و8 وارتفاعه 5؟",a:[{t:"30 سم²",c:true},{t:"20 سم²",c:false},{t:"60 سم²",c:false},{t:"40 سم²",c:false}],expl:"المساحة = ½×(4+8)×5 = ½×12×5 = 30 سم²",diff:'mid'},
+      {q:"ما نتيجة: 2/3 − 1/6؟",a:[{t:"1/2",c:true},{t:"1/3",c:false},{t:"3/9",c:false},{t:"1/6",c:false}],expl:"2/3 = 4/6، 4/6-1/6 = 3/6 = 1/2",diff:'mid'},
+      {q:"إذا كانت المساحة 48 سم² وطول مستطيل 8، فما عرضه؟",a:[{t:"6 سم",c:true},{t:"4 سم",c:false},{t:"8 سم",c:false},{t:"12 سم",c:false}],expl:"العرض = المساحة÷الطول = 48÷8 = 6 سم",diff:'mid'},
+      {q:"كم تساوي 3/8 من 64؟",a:[{t:"24",c:true},{t:"16",c:false},{t:"8",c:false},{t:"32",c:false}],expl:"3/8 × 64 = 3×8 = 24",diff:'easy'},
+      {q:"ما الحد الـ5 في متتالية: 2, 4, 6, 8, ...؟",a:[{t:"10",c:true},{t:"12",c:false},{t:"8",c:false},{t:"16",c:false}],expl:"متتالية حسابية أساسها 2: 2,4,6,8,10",diff:'easy'},
+      {q:"ما قيمة x في: 2x + 7 = 15؟",a:[{t:"4",c:true},{t:"8",c:false},{t:"11",c:false},{t:"3",c:false}],expl:"2x = 15-7 = 8، x = 4",diff:'easy'},
+      {q:"ما مساحة دائرة قطرها 6 سم؟ (π≈3.14)",a:[{t:"28.26 سم²",c:true},{t:"18.84 سم²",c:false},{t:"36 سم²",c:false},{t:"9 سم²",c:false}],expl:"r=3، المساحة=π×r²=3.14×9=28.26",diff:'mid'},
+      {q:"ما ناتج: 1000 × 0.001؟",a:[{t:"1",c:true},{t:"0.1",c:false},{t:"10",c:false},{t:"100",c:false}],expl:"1000 × 0.001 = 1",diff:'easy'},
+    ],
+    economy: [
+      {q:"ما المتوسط الحسابي: 15, 25, 35, 45؟",a:[{t:"30",c:true},{t:"25",c:false},{t:"35",c:false},{t:"120",c:false}],expl:"(15+25+35+45)/4 = 120/4 = 30",diff:'easy'},
+      {q:"ما نسبة الخسارة إذا اشترى بـ 1000 وباع بـ 800؟",a:[{t:"20%",c:true},{t:"25%",c:false},{t:"80%",c:false},{t:"200%",c:false}],expl:"نسبة الخسارة = (1000-800)/1000 × 100 = 20%",diff:'mid'},
+      {q:"ما القسط الشهري لقرض 120000 على 12 شهراً؟",a:[{t:"10000",c:true},{t:"12000",c:false},{t:"8000",c:false},{t:"1000",c:false}],expl:"120000÷12 = 10000 شهرياً",diff:'easy'},
+      {q:"زادت الأجور بنسبة 10% من 25000. ما الأجر الجديد؟",a:[{t:"27500",c:true},{t:"35000",c:false},{t:"26000",c:false},{t:"30000",c:false}],expl:"الزيادة = 10%×25000=2500، الأجر الجديد=25000+2500=27500",diff:'easy'},
+      {q:"ما ناتج: 2500 × 4.5؟",a:[{t:"11250",c:true},{t:"10000",c:false},{t:"12500",c:false},{t:"9000",c:false}],expl:"2500×4=10000، 2500×0.5=1250، المجموع=11250",diff:'easy'},
+      {q:"ما عدد السلع إذا بلغ الإنتاج الكلي 15000 وسعر الوحدة 300؟",a:[{t:"50",c:true},{t:"500",c:false},{t:"4500000",c:false},{t:"45000",c:false}],expl:"عدد السلع = 15000÷300 = 50",diff:'mid'},
+      {q:"ما قيمة ضريبة 19% على فاتورة 5000 دج؟",a:[{t:"950 دج",c:true},{t:"190 دج",c:false},{t:"5950 دج",c:false},{t:"1000 دج",c:false}],expl:"19÷100×5000 = 950 دج",diff:'mid'},
+      {q:"مؤسسة باعت 200 وحدة بـ 500 دج والتكلفة 350. ما الربح الكلي؟",a:[{t:"30000 دج",c:true},{t:"10000 دج",c:false},{t:"100000 دج",c:false},{t:"70000 دج",c:false}],expl:"ربح الوحدة = 500-350=150، الربح الكلي=150×200=30000",diff:'hard'},
+      {q:"ما معدل الفائدة البسيطة إذا أنتجت 10000 على 2 سنة فائدة 2000؟",a:[{t:"10%",c:true},{t:"20%",c:false},{t:"2%",c:false},{t:"5%",c:false}],expl:"I = C×t×n، 2000=10000×t×2، t=2000/20000=10%",diff:'hard'},
+      {q:"ما رقم الأعمال إذا بيعت 500 وحدة بـ 120 دج؟",a:[{t:"60000 دج",c:true},{t:"620 دج",c:false},{t:"500 دج",c:false},{t:"6000 دج",c:false}],expl:"رقم الأعمال = الكمية × السعر = 500×120=60000 دج",diff:'easy'},
+    ]
+  },
+  '3': {
+    math: [
+      {q:"ما حد النهاية: lim(x→0) sin(x)/x؟",a:[{t:"1",c:true},{t:"0",c:false},{t:"∞",c:false},{t:"غير موجود",c:false}],expl:"هذه نهاية معروفة: lim(x→0) sin(x)/x = 1",diff:'hard'},
+      {q:"ما مشتقة f(x) = eˣ × sin(x)؟",a:[{t:"eˣ(sin(x)+cos(x))",c:true},{t:"eˣ·cos(x)",c:false},{t:"eˣ·sin(x)",c:false},{t:"sin(x)+cos(x)",c:false}],expl:"قاعدة الضرب: (uv)' = u'v+uv'، u'=eˣ، v'=cos(x)",diff:'hard'},
+      {q:"ما قيمة: ∫₀^π sin(x) dx؟",a:[{t:"2",c:true},{t:"0",c:false},{t:"1",c:false},{t:"π",c:false}],expl:"[-cos(x)]₀^π = -cos(π)+cos(0) = 1+1 = 2",diff:'hard'},
+      {q:"ما ناتج: (1+i)² في الأعداد المركبة؟",a:[{t:"2i",c:true},{t:"2",c:false},{t:"0",c:false},{t:"1+2i",c:false}],expl:"(1+i)² = 1+2i+i² = 1+2i-1 = 2i",diff:'mid'},
+      {q:"ما القيمة الأصغر (min) لـ f(x)=x²-4x+5؟",a:[{t:"1",c:true},{t:"5",c:false},{t:"4",c:false},{t:"0",c:false}],expl:"x_min = -b/2a = 2، f(2) = 4-8+5 = 1",diff:'mid'},
+      {q:"عدد المتتالية الهندسية أساسها 2 وأول حد 1. ما الحد الـ6؟",a:[{t:"32",c:true},{t:"64",c:false},{t:"16",c:false},{t:"62",c:false}],expl:"uₙ = 1 × 2^(n-1)، u₆ = 2⁵ = 32",diff:'mid'},
+      {q:"ما المصفوفة العكسية لـ [[2,0],[0,3]]؟",a:[{t:"[[1/2,0],[0,1/3]]",c:true},{t:"[[3,0],[0,2]]",c:false},{t:"[[2,0],[0,3]]",c:false},{t:"لا وجود لها",c:false}],expl:"معكوس مصفوفة قطرية: نأخذ معكوس كل عنصر قطري",diff:'hard'},
+      {q:"ما الحل العام للمعادلة التفاضلية: y' = 2y؟",a:[{t:"y = Ce^(2x)",c:true},{t:"y = 2eˣ",c:false},{t:"y = e^(2x)",c:false},{t:"y = 2x+C",c:false}],expl:"y'/y = 2، ln|y| = 2x+C₀، y = Ce^(2x)",diff:'hard'},
+      {q:"كم عدد ترتيبات 5 عناصر مختلفة؟",a:[{t:"120",c:true},{t:"25",c:false},{t:"100",c:false},{t:"60",c:false}],expl:"P₅ = 5! = 5×4×3×2×1 = 120",diff:'mid'},
+      {q:"ما ناتج: C(5,2) (التوافيق)؟",a:[{t:"10",c:true},{t:"20",c:false},{t:"5",c:false},{t:"2",c:false}],expl:"C(5,2) = 5!/(2!×3!) = (5×4)/(2×1) = 10",diff:'mid'},
+      {q:"اقتران f محدب إذا كانت f''(x)؟",a:[{t:"موجبة",c:true},{t:"سالبة",c:false},{t:"معدومة",c:false},{t:"غير موجودة",c:false}],expl:"f''(x) > 0: الاقتران محدب (مقعر لأعلى)",diff:'hard'},
+      {q:"ما المستقيم المماس لـ f(x)=x² عند x=1؟",a:[{t:"y = 2x - 1",c:true},{t:"y = 2x + 1",c:false},{t:"y = x + 1",c:false},{t:"y = x",c:false}],expl:"f'(x)=2x، عند x=1: slope=2، f(1)=1، y-1=2(x-1) → y=2x-1",diff:'hard'},
+      {q:"ما تعريف الاقتران المتصل عند نقطة a؟",a:[{t:"lim(x→a) f(x) = f(a)",c:true},{t:"f(a) = 0",c:false},{t:"f'(a) موجود",c:false},{t:"f(a) موجب",c:false}],expl:"الاقتران متصل عند a إذا وجدت النهاية وساوت القيمة",diff:'mid'},
+      {q:"ما الاحتمال الكلي لـ A مع P(B)=0.4، P(A|B)=0.5، P(A|B̅)=0.2؟",a:[{t:"0.32",c:true},{t:"0.5",c:false},{t:"0.7",c:false},{t:"0.12",c:false}],expl:"P(A)=P(A|B)P(B)+P(A|B̅)P(B̅)=0.5×0.4+0.2×0.6=0.2+0.12=0.32",diff:'hard'},
+      {q:"ما مجموع الأعداد المركبة: (3+2i)+(1-4i)؟",a:[{t:"4-2i",c:true},{t:"4+2i",c:false},{t:"3-2i",c:false},{t:"2-2i",c:false}],expl:"(3+1)+(2i-4i) = 4-2i",diff:'easy'},
+    ],
+    science: [
+      {q:"ما مشتقة f(x) = ln(x)؟",a:[{t:"1/x",c:true},{t:"x",c:false},{t:"ln(x)/x",c:false},{t:"1",c:false}],expl:"(ln(x))' = 1/x",diff:'mid'},
+      {q:"ما ناتج: ∫ (1/x) dx؟",a:[{t:"ln|x| + C",c:true},{t:"x + C",c:false},{t:"-1/x² + C",c:false},{t:"ln(x²) + C",c:false}],expl:"∫(1/x)dx = ln|x| + C",diff:'hard'},
+      {q:"ما نهاية: lim(x→+∞) eˣ؟",a:[{t:"+∞",c:true},{t:"0",c:false},{t:"1",c:false},{t:"e",c:false}],expl:"الدالة الأسية تتزايد إلى ما لانهاية",diff:'easy'},
+      {q:"ما قيمة المميز Δ لـ x²+4x+4=0؟",a:[{t:"0",c:true},{t:"4",c:false},{t:"8",c:false},{t:"16",c:false}],expl:"Δ = 4²-4×1×4 = 16-16 = 0، معادلة لها جذر مضاعف",diff:'mid'},
+      {q:"ما اتجاه التغير لـ f(x)=e^(-x)؟",a:[{t:"تتناقص على R",c:true},{t:"تتزايد على R",c:false},{t:"ثابتة",c:false},{t:"تتزايد ثم تتناقص",c:false}],expl:"f'(x) = -e^(-x) < 0 دائماً، لذا هي متناقصة",diff:'mid'},
+      {q:"حل: x² - 3x + 2 = 0",a:[{t:"x=1 أو x=2",c:true},{t:"x=3 أو x=1",c:false},{t:"x=2 أو x=0",c:false},{t:"لا حل",c:false}],expl:"(x-1)(x-2)=0، x=1 أو x=2",diff:'easy'},
+      {q:"ما قيمة: C(6,3)؟",a:[{t:"20",c:true},{t:"18",c:false},{t:"120",c:false},{t:"30",c:false}],expl:"C(6,3) = 6!/(3!×3!) = 720/36 = 20",diff:'mid'},
+      {q:"ما هي دالة عكس f(x)=2x+1؟",a:[{t:"f⁻¹(x)=(x-1)/2",c:true},{t:"f⁻¹(x)=2x-1",c:false},{t:"f⁻¹(x)=(x+1)/2",c:false},{t:"f⁻¹(x)=1/(2x+1)",c:false}],expl:"y=2x+1 → x=(y-1)/2، نحل: f⁻¹(x)=(x-1)/2",diff:'hard'},
+      {q:"ما قيمة: ln(e²)؟",a:[{t:"2",c:true},{t:"e",c:false},{t:"e²",c:false},{t:"1",c:false}],expl:"ln(e²) = 2×ln(e) = 2×1 = 2",diff:'easy'},
+      {q:"ما الاقتران المتبادل مع f(x)=x²+1 على [0,+∞)؟",a:[{t:"f⁻¹(x)=√(x-1)",c:true},{t:"f⁻¹(x)=√(x+1)",c:false},{t:"f⁻¹(x)=x²-1",c:false},{t:"لا يوجد",c:false}],expl:"y=x²+1 → x²=y-1 → x=√(y-1)",diff:'hard'},
+    ],
+    literature: [
+      {q:"ما ناتج: (3+5) × (7-2)؟",a:[{t:"40",c:true},{t:"38",c:false},{t:"45",c:false},{t:"35",c:false}],expl:"(3+5)=8، (7-2)=5، 8×5=40",diff:'easy'},
+      {q:"ما 35% من 200؟",a:[{t:"70",c:true},{t:"35",c:false},{t:"65",c:false},{t:"80",c:false}],expl:"35÷100×200 = 70",diff:'easy'},
+      {q:"ما مساحة معين أقطاره 6 و8؟",a:[{t:"24 سم²",c:true},{t:"48 سم²",c:false},{t:"12 سم²",c:false},{t:"28 سم²",c:false}],expl:"مساحة المعين = (D₁×D₂)/2 = (6×8)/2 = 24",diff:'mid'},
+      {q:"ما الحد الـ7 في متتالية: 1,4,7,10,...؟",a:[{t:"19",c:true},{t:"21",c:false},{t:"16",c:false},{t:"22",c:false}],expl:"أساس=3، u₇=1+(7-1)×3=1+18=19",diff:'mid'},
+      {q:"ما قيمة x في: 4x − 3 = 2x + 9؟",a:[{t:"6",c:true},{t:"3",c:false},{t:"12",c:false},{t:"1",c:false}],expl:"4x-2x = 9+3 → 2x=12 → x=6",diff:'mid'},
+      {q:"ما نسبة تغير من 80 إلى 100؟",a:[{t:"25%",c:true},{t:"20%",c:false},{t:"80%",c:false},{t:"100%",c:false}],expl:"نسبة الزيادة = (100-80)/80 × 100 = 25%",diff:'mid'},
+      {q:"ما حاصل ضرب √3 × √3؟",a:[{t:"3",c:true},{t:"√9",c:false},{t:"9",c:false},{t:"6",c:false}],expl:"√3 × √3 = 3",diff:'easy'},
+      {q:"ما قيمة: 2⁵؟",a:[{t:"32",c:true},{t:"16",c:false},{t:"64",c:false},{t:"10",c:false}],expl:"2⁵=2×2×2×2×2=32",diff:'easy'},
+      {q:"ما قيمة x في: x² = 49؟",a:[{t:"±7",c:true},{t:"7",c:false},{t:"24.5",c:false},{t:"98",c:false}],expl:"x = ±√49 = ±7",diff:'hard'},
+      {q:"ما مساحة الوجه الجانبي لمكعب ضلعه 4؟",a:[{t:"16 سم²",c:true},{t:"64 سم²",c:false},{t:"96 سم²",c:false},{t:"24 سم²",c:false}],expl:"وجه المكعب = a² = 4² = 16 سم²",diff:'easy'},
+    ],
+    economy: [
+      {q:"ما مبلغ الفائدة المركبة لـ 10000 بمعدل 5% لسنتين؟",a:[{t:"1025 دج",c:true},{t:"1000 دج",c:false},{t:"2000 دج",c:false},{t:"500 دج",c:false}],expl:"F=C(1+t)^n=10000×1.05²=11025، الفائدة=1025",diff:'hard'},
+      {q:"ما نقطة التعادل إذا التكاليف الثابتة 50000 وهامش التكلفة المتغيرة 200 للوحدة؟",a:[{t:"250 وحدة",c:true},{t:"50000 وحدة",c:false},{t:"100 وحدة",c:false},{t:"500 وحدة",c:false}],expl:"نقطة التعادل = التكاليف الثابتة ÷ هامش المساهمة = 50000÷200=250",diff:'hard'},
+      {q:"ما المتوسط الموزون لـ: 10 وحدة بـ5، 20 وحدة بـ8؟",a:[{t:"7",c:true},{t:"6.5",c:false},{t:"13",c:false},{t:"6",c:false}],expl:"المتوسط الموزون = (10×5+20×8)/(10+20) = (50+160)/30 = 210/30 = 7",diff:'hard'},
+      {q:"ما نسبة الاستهلاك الخطي لآلة قيمتها 500000 وعمرها 5 سنوات؟",a:[{t:"20%",c:true},{t:"5%",c:false},{t:"25%",c:false},{t:"10%",c:false}],expl:"نسبة الاستهلاك الخطي = 1/n = 1/5 = 20%",diff:'mid'},
+      {q:"ما قيمة الأصل بعد سنتين باستهلاك 20% خطي على قيمة 100000؟",a:[{t:"60000",c:true},{t:"80000",c:false},{t:"40000",c:false},{t:"20000",c:false}],expl:"استهلاك سنوي = 20%×100000=20000، بعد سنتين: 100000-40000=60000",diff:'mid'},
+      {q:"ما رقم الأعمال الضروري لتغطية تكاليف 120000 بهامش ربح 40%؟",a:[{t:"300000",c:true},{t:"168000",c:false},{t:"48000",c:false},{t:"200000",c:false}],expl:"رقم الأعمال = التكاليف÷نسبة الهامش = 120000÷0.4 = 300000",diff:'hard'},
+      {q:"ما الانحراف المعياري لـ: 2، 4، 6؟",a:[{t:"√8/3 ≈ 1.63",c:true},{t:"2",c:false},{t:"4",c:false},{t:"0",c:false}],expl:"المتوسط=4، الانحرافات: (2-4)²+(4-4)²+(6-4)²=4+0+4=8، الانحراف=√(8/3)≈1.63",diff:'hard'},
+      {q:"ما معامل الترابط إذا كان قريباً من 1؟",a:[{t:"ارتباط خطي موجب قوي",c:true},{t:"لا ارتباط",c:false},{t:"ارتباط سالب",c:false},{t:"ارتباط ضعيف",c:false}],expl:"معامل الارتباط (r) قرب +1 يعني ارتباط خطي موجب قوي",diff:'mid'},
+      {q:"ما قيمة المنتج الهامشي إذا زاد الإنتاج من 100 إلى 110 بعد إضافة عامل؟",a:[{t:"10",c:true},{t:"100",c:false},{t:"110",c:false},{t:"1",c:false}],expl:"المنتج الهامشي = الزيادة في الإنتاج = 110-100 = 10",diff:'mid'},
+      {q:"ما ناتج: 45000 ÷ 1.5؟",a:[{t:"30000",c:true},{t:"25000",c:false},{t:"67500",c:false},{t:"43500",c:false}],expl:"45000÷1.5 = 45000×(2/3) = 30000",diff:'easy'},
+    ]
+  }
+};
+
+// SVG icons for branches
+const BRANCH_ICONS = {
+  math: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>`,
+  science: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v8l-4 6a1 1 0 0 0 .85 1.5h12.3A1 1 0 0 0 19 17l-4-6V3"/><line x1="7" y1="3" x2="17" y2="3"/><line x1="9" y1="11" x2="15" y2="11"/><circle cx="8.5" cy="15.5" r="0.8" fill="white" stroke="none"/><circle cx="12" cy="14.5" r="0.8" fill="white" stroke="none"/><circle cx="15" cy="15.8" r="0.8" fill="white" stroke="none"/></svg>`,
+  literature: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+  economy: `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`
+};
+const BRANCH_ICON_CLASS = { math:'math', science:'science', literature:'literature', economy:'economy' };
+const BRANCHES = {
+  '1': [
+    {id:'math',       label:'رياضيات',         sub:'شعبة رياضيات'},
+    {id:'science',    label:'علوم تجريبية',     sub:'شعبة علوم تجريبية'},
+    {id:'literature', label:'آداب وفلسفة',       sub:'شعبة آداب وفلسفة'},
+    {id:'economy',    label:'تسيير وإقتصاد',    sub:'شعبة تسيير وإقتصاد'},
+  ],
+  '2': [
+    {id:'math',       label:'رياضيات',         sub:'شعبة رياضيات'},
+    {id:'science',    label:'علوم تجريبية',     sub:'شعبة علوم تجريبية'},
+    {id:'literature', label:'آداب وفلسفة',       sub:'شعبة آداب وفلسفة'},
+    {id:'economy',    label:'تسيير وإقتصاد',    sub:'شعبة تسيير وإقتصاد'},
+  ],
+  '3': [
+    {id:'math',       label:'رياضيات',         sub:'شعبة رياضيات - بكالوريا'},
+    {id:'science',    label:'علوم تجريبية',     sub:'شعبة علوم تجريبية - بكالوريا'},
+    {id:'literature', label:'آداب وفلسفة',       sub:'شعبة آداب وفلسفة - بكالوريا'},
+    {id:'economy',    label:'تسيير وإقتصاد',    sub:'شعبة تسيير وإقتصاد - بكالوريا'},
+  ]
+};
+
+const GRADE_NAMES = {'1':'أولى ثانوي','2':'ثانية ثانوية','3':'ثالثة ثانوي (باكالوريا)'};
+const BRANCH_NAMES = {math:'رياضيات',science:'علوم تجريبية',literature:'آداب وفلسفة',economy:'تسيير وإقتصاد'};
+const DIFF_NAMES = {easy:'سهل',mid:'متوسط',hard:'صعب'};
+
+// وقت السؤال حسب الصعوبة
+const DIFF_TIME = {easy:30, mid:30, hard:30};
+
+// ===========================
+// STATE
+// ===========================
+let state = {
+  grade: null, branch: null,
+  playerName: '',
+  difficulty: 'easy',
+  questionCount: 10,
+  questions: [], currentQ: 0,
+  correct: 0, wrong: 0, points: 0,
+  streak: 0, maxStreak: 0,
+  timerVal: 30, timerInterval: null,
+  totalTime: 30,
+  hintsLeft: 3, answered: false,
+  startTime: null
+};
+let currentLbFilter = 'all';
+
+// ===========================
+// HELPERS
+// ===========================
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+function $(id) { return document.getElementById(id); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  $(id).classList.remove('hidden');
+}
+
+function notify(msg, dur=2500) {
+  const t = $('notif-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+function showFeedback(correct) {
+  const t = $('feedback-toast');
+  t.textContent = correct ? 'اجابة صحيحة! +1' : 'اجابة خاطئة!';
+  t.className = `show ${correct?'correct':'wrong'}`;
+  t.id = 'feedback-toast';
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function floatPoints(pts, good) {
+  const el = document.createElement('div');
+  el.className = 'float-point';
+  el.textContent = good ? `+${pts}` : '✕';
+  el.style.cssText = `color:${good?'#10b981':'#ef4444'};left:${35+Math.random()*25}%;top:55%;`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1300);
+}
+
+// ===========================
+// DIFFICULTY SELECTOR
+// ===========================
+function selectDiff(diff, el) {
+  sfx('click');
+  state.difficulty = diff;
+  document.querySelectorAll('.diff-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ===========================
+// QUESTION COUNT SELECTOR
+// ===========================
+function selectQCount(n, el) {
+  sfx('click');
+  state.questionCount = n;
+  document.querySelectorAll('.qcount-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ===========================
+// MODAL CONTROLS
+// ===========================
+function openGradeModal() { sfx('click'); $('grade-modal').classList.add('show'); }
+function closeGradeModal() { sfx('click'); $('grade-modal').classList.remove('show'); }
+
+function selectGrade(grade) {
+  sfx('click');
+  state.grade = grade;
+  closeGradeModal();
+  const branches = BRANCHES[grade];
+  const grid = $('branch-grid-modal');
+  grid.innerHTML = branches.map(b=>`
+    <div class="select-card" onclick="selectBranch('${b.id}')">
+      <div class="branch-icon ${BRANCH_ICON_CLASS[b.id]}">${BRANCH_ICONS[b.id]}</div>
+      <div>
+        <div class="card-label">${b.label}</div>
+        <div class="card-sub">${b.sub}</div>
+      </div>
+    </div>
+  `).join('');
+  $('branch-modal-sub').textContent = `${GRADE_NAMES[grade]} - اختر شعبتك`;
+  setTimeout(()=>$('branch-modal').classList.add('show'), 200);
+}
+
+function closeBranchModal() { sfx('click'); $('branch-modal').classList.remove('show'); }
+
+function selectBranch(branch) {
+  sfx('click');
+  state.branch = branch;
+  closeBranchModal();
+  setTimeout(()=>{
+    $('diff-modal-sub').textContent = `${GRADE_NAMES[state.grade]} · ${BRANCHES[state.grade].find(b=>b.id===branch).label}`;
+    $('diff-modal').classList.add('show');
+  }, 200);
+}
+
+function closeDiffModal() { sfx('click'); $('diff-modal').classList.remove('show'); }
+
+function openNameModal() {
+  sfx('click');
+  $('diff-modal').classList.remove('show');
+  setTimeout(()=>{
+    $('name-modal-sub').textContent = `${GRADE_NAMES[state.grade]} · ${BRANCHES[state.grade].find(b=>b.id===state.branch).label} · ${DIFF_NAMES[state.difficulty]} · ${state.questionCount} أسئلة`;
+    $('player-name').value='';
+    $('name-modal').classList.add('show');
+    setTimeout(()=>$('player-name').focus(), 300);
+  }, 200);
+}
+
+function closeNameModal() { sfx('click'); $('name-modal').classList.remove('show'); }
+
+function confirmStart() {
+  const name = $('player-name').value.trim();
+  if(!name) { notify('من فضلك أدخل اسمك'); $('player-name').focus(); return; }
+  state.playerName = name;
+  $('name-modal').classList.remove('show');
+  setTimeout(()=>startQuiz(), 200);
+}
+
+// ===========================
+// QUIZ START
+// ===========================
+function startQuiz() {
+  const pool = QUESTIONS[state.grade][state.branch];
+  // تصفية حسب الصعوبة
+  const diffPool = pool.filter(q => q.diff === state.difficulty);
+  // إذا لم يكفِ، نأخذ من المستوى الآخر أيضاً
+  let allPool = diffPool.length >= state.questionCount
+    ? diffPool
+    : [...diffPool, ...pool.filter(q=>q.diff !== state.difficulty)];
+
+  state.questions = shuffle(allPool).slice(0, Math.min(state.questionCount, allPool.length));
+  state.totalTime = DIFF_TIME[state.difficulty];
+
+  Object.assign(state, {
+    currentQ:0, correct:0, wrong:0, points:0,
+    streak:0, maxStreak:0, hintsLeft:3, answered:false,
+    startTime:Date.now()
+  });
+
+  const grade = GRADE_NAMES[state.grade];
+  const branch = BRANCHES[state.grade].find(b=>b.id===state.branch);
+  $('quiz-badge').textContent = `${branch.label} | ${grade} | ${DIFF_NAMES[state.difficulty]}`;
+
+  sfx('start');
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+// ===========================
+// RENDER QUESTION
+// ===========================
+function renderQuestion() {
+  const q = state.questions[state.currentQ];
+  const total = state.questions.length;
+  const num = state.currentQ + 1;
+
+  $('quiz-qnum').textContent = `سؤال ${num} / ${total}`;
+  $('q-num-badge').textContent = num;
+  $('q-text').textContent = q.q;
+  $('progress-fill').style.width = `${((num-1)/total)*100}%`;
+
+  state.answered = false;
+  $('explanation-box').classList.remove('show');
+  $('next-btn').classList.remove('show');
+  document.getElementById('score-bar').classList.remove('hidden-bar');
+  $('hint-btn').disabled = false;
+  $('hint-btn').style.opacity = '1';
+  $('hint-count').textContent = state.hintsLeft;
+
+  const labels = ['أ','ب','ج','د'];
+  const shuffled = shuffle(q.a);
+  $('choices-grid').innerHTML = shuffled.map((ans,i)=>`
+    <button class="choice-btn" onclick="answerQuestion(this,'${ans.t.replace(/'/g,"\\'")}',${ans.c})">
+      <span class="choice-label">${labels[i]}</span>
+      <span>${ans.t}</span>
+    </button>
+  `).join('');
+
+  clearInterval(state.timerInterval);
+  state.timerVal = state.totalTime;
+  updateTimerUI();
+  state.timerInterval = setInterval(()=>{
+    state.timerVal--;
+    updateTimerUI();
+    // صوت نبضة كل ثانية
+    if(state.timerVal > 10) {
+      sfx('tick');
+    } else if(state.timerVal <= 10 && state.timerVal > 5) {
+      sfx('tick');
+    } else if(state.timerVal <= 5 && state.timerVal > 0) {
+      sfx('tick_warn');
+    }
+    if(state.timerVal <= 0) {
+      clearInterval(state.timerInterval);
+      timeUp();
+    }
+  }, 1000);
+
+  $('score-correct').textContent = state.correct;
+  $('score-wrong').textContent = state.wrong;
+  $('score-pts').textContent = state.points;
+}
+
+function updateTimerUI() {
+  $('timer-val').textContent = state.timerVal;
+  const pct = (state.timerVal / state.totalTime) * 100;
+  const color = state.timerVal > 10 ? '#1e3a5f' : state.timerVal > 5 ? '#f59e0b' : '#ef4444';
+  $('timer-circle').style.cssText = `--progress:${pct};background:conic-gradient(${color} calc(${pct}*1%),#e2e8f0 0)`;
+  $('timer-val').style.color = color;
+}
+
+function timeUp() {
+  if(state.answered) return;
+  state.answered = true;
+  sfx('wrong');
+  notify('انتهى الوقت!');
+  state.wrong++;
+  state.streak = 0;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const q = state.questions[state.currentQ];
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    const txt = b.querySelector('span:last-child').textContent;
+    if(q.a.find(a=>a.t===txt&&a.c)) b.classList.add('correct');
+  });
+  showExplanation();
+  $('next-btn').classList.add('show');
+  document.getElementById('score-bar').classList.add('hidden-bar');
+  $('score-wrong').textContent = state.wrong;
+}
+
+// ===========================
+// ANSWER - نقطة لكل إجابة صحيحة
+// ===========================
+function answerQuestion(btn, txt, isCorrect) {
+  if(state.answered) return;
+  state.answered = true;
+  clearInterval(state.timerInterval);
+
+  if(isCorrect) {
+    sfx('correct');
+    state.correct++;
+    state.streak++;
+    state.maxStreak = Math.max(state.maxStreak, state.streak);
+    // نقطة واحدة لكل إجابة صحيحة
+    const bonus = 1;
+    state.points += bonus;
+    btn.classList.add('correct');
+    showFeedback(true);
+    floatPoints(bonus, true);
+    if(state.streak >= 3) showStreakBadge();
+  } else {
+    sfx('wrong');
+    state.wrong++;
+    state.streak = 0;
+    btn.classList.add('wrong');
+    showFeedback(false);
+    const q = state.questions[state.currentQ];
+    document.querySelectorAll('.choice-btn').forEach(b=>{
+      const t = b.querySelector('span:last-child').textContent;
+      if(q.a.find(a=>a.t===t&&a.c)) b.classList.add('correct');
+    });
+    floatPoints(0, false);
+  }
+
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  $('score-correct').textContent = state.correct;
+  $('score-wrong').textContent = state.wrong;
+  $('score-pts').textContent = state.points;
+  // إخفاء شريط النتيجة لتوفير مساحة لزر التالي
+  document.getElementById('score-bar').classList.add('hidden-bar');
+  // عرض الشرح دائماً (صح أو خطأ)
+  showExplanation();
+  $('next-btn').classList.add('show');
+}
+
+// عرض الشرح دائماً من الأسفل
+function showExplanation() {
+  const q = state.questions[state.currentQ];
+  if(q.expl) {
+    $('expl-text').textContent = q.expl;
+    $('explanation-box').classList.add('show');
+  }
+}
+
+function showStreakBadge() {
+  const badge = $('streak-badge');
+  $('streak-text').textContent = `${state.streak} متتالية!`;
+  badge.classList.add('show');
+  setTimeout(()=>badge.classList.remove('show'), 2500);
+}
+
+// ===========================
+// HINT
+// ===========================
+function useHint() {
+  if(state.hintsLeft <= 0 || state.answered) return;
+  sfx('hint');
+  state.hintsLeft--;
+  $('hint-count').textContent = state.hintsLeft;
+  if(state.hintsLeft === 0) { $('hint-btn').disabled=true; $('hint-btn').style.opacity='0.4'; }
+  const q = state.questions[state.currentQ];
+  const btns = [...document.querySelectorAll('.choice-btn:not(:disabled)')];
+  const wrong = btns.filter(b=>{
+    const t = b.querySelector('span:last-child').textContent;
+    return q.a.find(a=>a.t===t&&!a.c);
+  });
+  if(wrong.length) {
+    const rem = shuffle(wrong)[0];
+    rem.style.opacity='0.3'; rem.disabled=true;
+    notify('تم حذف إجابة خاطئة!');
+  }
+}
+
+// ===========================
+// NEXT / END
+// ===========================
+function nextQuestion() {
+  sfx('click');
+  state.currentQ++;
+  if(state.currentQ >= state.questions.length) endQuiz();
+  else renderQuestion();
+}
+
+// ===========================
+// EXIT
+// ===========================
+function showExitModal() { sfx('click'); $('exit-modal').classList.add('show'); }
+function closeExitModal() { sfx('click'); $('exit-modal').classList.remove('show'); }
+function confirmExit() {
+  $('exit-modal').classList.remove('show');
+  clearInterval(state.timerInterval);
+  if(state.currentQ > 0 || state.answered) endQuiz();
+  else goHome();
+}
+
+// ===========================
+// END QUIZ
+// ===========================
+function endQuiz() {
+  clearInterval(state.timerInterval);
+  sfx('finish');
+
+  const total = state.questions.length;
+  const pct = total ? Math.round((state.correct/total)*100) : 0;
+
+  const trophy = pct>=90?'🥇':pct>=70?'🥈':pct>=50?'🥉':'📊';
+  const msg = pct>=90?'أداء استثنائي! أنت متفوق حقاً':
+              pct>=70?'جيد جداً! استمر في التحسن':
+              pct>=50?'لا بأس! راجع الدروس وحاول مجدداً':
+              'تحتاج لمزيد من الدراسة، أنت قادر!';
+
+  $('result-trophy').textContent = trophy;
+  $('result-name').textContent = state.playerName;
+  $('result-score-big').textContent = state.points;
+  $('rs-correct').textContent = state.correct;
+  $('rs-wrong').textContent = state.wrong;
+  $('rs-pct').textContent = pct+'%';
+  $('result-msg').textContent = msg;
+
+  const record = {
+    name: state.playerName,
+    grade: state.grade,
+    branch: state.branch,
+    difficulty: state.difficulty,
+    points: state.points,
+    correct: state.correct,
+    wrong: state.wrong,
+    pct, total,
+    date: new Date().toLocaleDateString('ar-DZ')
+  };
+  const records = JSON.parse(localStorage.getItem('qm_records')||'[]');
+  records.push(record);
+  records.sort((a,b)=>b.points-a.points);
+  localStorage.setItem('qm_records', JSON.stringify(records));
+
+  showScreen('result-screen');
+  if(pct >= 70) launchConfetti();
+}
+
+// ===========================
+// CONFETTI
+// ===========================
+function launchConfetti() {
+  const colors = ['#f59e0b','#1e3a5f','#10b981','#ef4444','#2d5f9e','#00aaff'];
+  for(let i=0;i<50;i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className='confetti-piece';
+      el.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};top:-10px;border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*1.5}s;`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),4000);
+    },i*50);
+  }
+}
+
+// ===========================
+// LEADERBOARD
+// ===========================
+function showLeaderboard() {
+  sfx('click');
+  currentLbFilter='all';
+  document.querySelectorAll('.lb-filter').forEach((b,i)=>b.classList.toggle('active',i===0));
+  renderLeaderboard();
+  showScreen('leaderboard-screen');
+}
+
+function filterLb(f,el) {
+  sfx('click');
+  currentLbFilter=f;
+  document.querySelectorAll('.lb-filter').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const records = JSON.parse(localStorage.getItem('qm_records')||'[]');
+  const filtered = currentLbFilter==='all' ? records : records.filter(r=>r.branch===currentLbFilter);
+  const list = $('lb-list');
+  const rankClasses=['gold','silver','bronze'];
+  const rankSymbols=['1','2','3'];
+
+  if(!filtered.length) {
+    list.innerHTML='<div class="lb-empty"><div class="lb-empty-icon">📭</div><p>لا توجد نتائج بعد</p></div>';
+    return;
+  }
+
+  list.innerHTML=filtered.map((r,i)=>`
+    <li class="lb-item" style="animation-delay:${i*0.05}s">
+      <div class="lb-rank ${rankClasses[i]||'other'}">${i<3?rankSymbols[i]:i+1}</div>
+      <div class="lb-info">
+        <div class="lb-name">${r.name}</div>
+        <div class="lb-meta">${GRADE_NAMES[r.grade]||''} · ${BRANCH_NAMES[r.branch]||''} · ${r.pct}% · ${r.date}</div>
+      </div>
+      <div class="lb-score">
+        <div class="pts">${r.points}</div>
+        <div class="pts-lbl">نقطة</div>
+      </div>
+      <button class="lb-delete" onclick="deleteRecord(${i})" title="حذف">🗑️</button>
+    </li>
+  `).join('');
+}
+
+function deleteRecord(idx) {
+  sfx('click');
+  const records = JSON.parse(localStorage.getItem('qm_records')||'[]');
+  const filtered = currentLbFilter==='all' ? records : records.filter(r=>r.branch===currentLbFilter);
+  const toDelete = filtered[idx];
+  const ai = records.indexOf(toDelete);
+  if(ai!==-1) records.splice(ai,1);
+  localStorage.setItem('qm_records', JSON.stringify(records));
+  renderLeaderboard();
+  notify('تم حذف النتيجة');
+}
+
+function clearAllRecords() {
+  sfx('click');
+  if(!confirm('هل تريد مسح جميع النتائج؟')) return;
+  localStorage.removeItem('qm_records');
+  renderLeaderboard();
+  notify('تم مسح جميع النتائج');
+}
+
+// ===========================
+// NAVIGATION
+// ===========================
+function goHome() {
+  sfx('click');
+  clearInterval(state.timerInterval);
+  showScreen('home-screen');
+}
+
+function restartQuiz() {
+  sfx('click');
+  startQuiz();
+}
+</script>
+</body>
+</html>
